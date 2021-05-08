@@ -1,4 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
+from flask_wtf.csrf import CSRFProtect
+
+# CSRF (Cross-site Request Forgery): Solicitud de falsificacion entre sitios.
+csrf = CSRFProtect()
 
 app = Flask(__name__)
 
@@ -28,5 +32,6 @@ def page_not_found(error):
 
 def init_app(settings):
     app.config.from_object(settings)
+    csrf.init_app(app)
     app.register_error_handler(404, page_not_found)
     return app
