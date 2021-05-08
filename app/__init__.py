@@ -16,7 +16,7 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        if(request.form['user'] == 'admin' and request.form['password'] == '123'):
+        if(request.form['user'] == 'admin' and request.form['password'] == 'abc123'):
             return redirect(url_for('index'))
         else:
             return render_template('auth/login.html')
