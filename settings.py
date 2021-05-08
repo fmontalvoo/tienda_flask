@@ -4,6 +4,10 @@ class Settings:
 
 class DelelopmentSettings(Settings):
     DEBUG = True
+    MYSQL_HOST = '192.168.1.38'
+    MYSQL_USER = 'admin'
+    MYSQL_PASSWORD = 'Admin.123'
+    MYSQL_DB = 'tienda_db'
 
 
 settings = {

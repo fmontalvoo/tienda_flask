@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for
+from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
 
 # CSRF (Cross-site Request Forgery): Solicitud de falsificacion entre sitios.
 csrf = CSRFProtect()
 
 app = Flask(__name__)
+
+db = MySQL(app)
 
 
 # Paginas de la aplicacion
@@ -23,9 +26,20 @@ def login():
     else:
         return render_template('auth/login.html')
 
+
+@app.route('/libros')
+def libros():
+    try:
+        cursor = db.connection.cursor()
+        sql = 'SELECT isbn, titulo FROM libro'
+        cursor.execute(sql)
+        data = cursor.fetchall()
+        print(data)
+        return 'ok'
+    except Exception as e:
+        raise Exception(e)
+
 # Manejos de Errores
-
-
 def page_not_found(error):
     return render_template('errors/404.html'), 404
 
