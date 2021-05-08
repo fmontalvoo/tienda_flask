@@ -8,13 +8,14 @@ class UsuarioDao():
     def login(self, db, usuario):
         try:
             cursor = db.connection.cursor()
-            sql = """SELECT id, usuario, password 
+            sql = """SELECT id, usuario, clave 
                     FROM usuario WHERE usuario = '{0}'""".format(usuario.usuario)
             cursor.execute(sql)
             data = cursor.fetchone()
+
             if data != None:
-                coincide = Usuario.verificar_password(
-                    data[2], usuario.password)
+                coincide = Usuario.check_password(
+                    user_password=data[2], password=usuario.clave)
                 if coincide:
                     usuario_logeado = Usuario(data[0], data[1], None, None)
                     return usuario_logeado
@@ -29,7 +30,7 @@ class UsuarioDao():
     def obtener_por_id(self, db, id):
         try:
             cursor = db.connection.cursor()
-            sql = """SELECT USU.id, USU.usuario, TIP.id, TIP.nombre 
+            sql = """SELECT USU.id, USU.usuario, TIP.id, TIP.tipo 
                     FROM usuario USU JOIN tipo_usuario TIP ON USU.tipo_usuario_id = TIP.id 
                     WHERE USU.id = {0}""".format(id)
             cursor.execute(sql)

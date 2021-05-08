@@ -2,7 +2,11 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
 
+from .models.entities.usuario import Usuario
+
 from .models.libro_dao import LibroDao
+from .models.usuario_dao import UsuarioDao
+
 
 # CSRF (Cross-site Request Forgery): Solicitud de falsificacion entre sitios.
 csrf = CSRFProtect()
@@ -21,7 +25,10 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        if(request.form['user'] == 'admin' and request.form['password'] == 'abc123'):
+        usuario = Usuario(
+            None, request.form['user'], request.form['password'], None)
+        auth = UsuarioDao.login(db, usuario)
+        if auth != None:
             return redirect(url_for('index'))
         else:
             return render_template('auth/login.html')
