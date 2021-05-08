@@ -38,9 +38,8 @@ def libros():
     except Exception as ex:
         print(ex)
 
+
 # Manejos de Errores
-
-
 def page_not_found(error):
     return render_template('errors/404.html'), 404
 
