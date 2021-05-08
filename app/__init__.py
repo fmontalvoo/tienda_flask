@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
 
+from .models.libro_dao import LibroDao
+
 # CSRF (Cross-site Request Forgery): Solicitud de falsificacion entre sitios.
 csrf = CSRFProtect()
 
@@ -30,16 +32,15 @@ def login():
 @app.route('/libros')
 def libros():
     try:
-        cursor = db.connection.cursor()
-        sql = 'SELECT isbn, titulo FROM libro'
-        cursor.execute(sql)
-        data = cursor.fetchall()
-        print(data)
-        return 'ok'
-    except Exception as e:
-        raise Exception(e)
+        libros = LibroDao.listar_libros(db)
+        data = {'libros': libros}
+        return render_template('lista_libros.html', data=data)
+    except Exception as ex:
+        print(ex)
 
 # Manejos de Errores
+
+
 def page_not_found(error):
     return render_template('errors/404.html'), 404
 
