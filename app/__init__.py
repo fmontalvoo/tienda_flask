@@ -8,6 +8,8 @@ from .models.entities.usuario import Usuario
 from .models.libro_dao import LibroDao
 from .models.usuario_dao import UsuarioDao
 
+from .consts import *
+
 
 # CSRF (Cross-site Request Forgery): Solicitud de falsificacion entre sitios.
 csrf = CSRFProtect()
@@ -38,9 +40,10 @@ def login():
         logged_user = UsuarioDao.login(db, usuario)
         if logged_user != None:
             login_user(logged_user)
+            flash(WELCOME_MESSAGE, 'success')
             return redirect(url_for('index'))
         else:
-            flash("Usuario o contraseña incorrectos")
+            flash(LOGIN_FAILURE, 'warning')
             return render_template('auth/login.html')
     else:
         return render_template('auth/login.html')
@@ -49,7 +52,7 @@ def login():
 @app.route('/logout')
 def logout():
     logout_user()
-    flash("Terminaste la sesión")
+    flash(LOGOUT, 'success')
     return redirect(url_for('login'))
 
 
