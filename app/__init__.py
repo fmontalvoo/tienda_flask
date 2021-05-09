@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user
@@ -40,6 +40,7 @@ def login():
             login_user(logged_user)
             return redirect(url_for('index'))
         else:
+            flash("Usuario o contraseña incorrectos")
             return render_template('auth/login.html')
     else:
         return render_template('auth/login.html')
@@ -48,6 +49,7 @@ def login():
 @app.route('/logout')
 def logout():
     logout_user()
+    flash("Terminaste la sesión")
     return redirect(url_for('login'))
 
 
