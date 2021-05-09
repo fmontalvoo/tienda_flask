@@ -1,14 +1,18 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 
+from .models.entities.libro import Libro
+from .models.entities.compra import Compra
 from .models.entities.usuario import Usuario
 
 from .models.libro_dao import LibroDao
+from .models.compra_dao import CompraDao
 from .models.usuario_dao import UsuarioDao
 
 from .consts import *
+# from .emails import confirmacion_compra
 
 
 # CSRF (Cross-site Request Forgery): Solicitud de falsificacion entre sitios.
@@ -35,13 +39,20 @@ def load_user(id):
 def index():
     if current_user.is_authenticated:
         if current_user.tipo_usuario.id == 1:
-            libros_vendidos = []
-            data = {"titulo": "Libros Vendidos",
-                    "libros_vendidos": libros_vendidos}
+            try:
+                libros_vendidos = LibroDao.listar_libros_vendidos(db)
+                data = {"titulo": "Libros Vendidos",
+                        "libros_vendidos": libros_vendidos}
+            except Exception as ex:
+                return render_template('errors/error.html', mensaje=format(ex))
         else:
-            compras = []
-            data = {"titulo": "Mis compras",
-                    "compras": compras}
+            try:
+                compras = CompraDao.listar_compras_usuario(db, current_user)
+                data = {"titulo": "Mis compras",
+                        "compras": compras}
+            except Exception as ex:
+                return render_template('errors/error.html', mensaje=format(ex))
+
         return render_template('index.html', data=data)
     else:
         return redirect(url_for('login'))
@@ -83,7 +94,25 @@ def listar_libros():
         return render_template('errors/error.html', mensaje=format(ex))
 
 
+@app.route('/comprarLibro', methods=['POST'])
+@login_required
+def comprar_libro():
+    data_request = request.get_json()
+    data = {}
+    try:
+        libro = LibroDao.leer_libro(db, data_request['isbn'])
+        compra = Compra(None, libro, current_user)
+        data['exito'] = CompraDao.registrar_compra(db, compra)
+
+        # confirmacion_compra(app, mail, current_user, libro)  # Envío asíncrono.
+    except Exception as ex:
+        data['mensaje'] = format(ex)
+        data['exito'] = False
+    return jsonify(data)
+
 # Manejos de Errores
+
+
 def page_not_found(error):
     return render_template('errors/404.html')
 

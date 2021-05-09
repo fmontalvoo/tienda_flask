@@ -22,3 +22,9 @@
     <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
 </div>
 {% endblock container %}
+
+{% block custom_js %}
+<script src="{{ url_for('static', filename='lib/sweetalert2-9.10.0/sweetalert2.all.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/notificacionSwal.js') }}"></script>
+<script src="{{ url_for('static', filename='js/listado_libros.js') }}"></script>
+{% endblock custom_js %}

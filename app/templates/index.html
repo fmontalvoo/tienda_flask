@@ -1,5 +1,9 @@
 {% extends './body.html' %}
 
+{% block custom_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock custom_css %}
+
 {% block title %}Inicio{% endblock %}
 
 {% block container %}
@@ -27,21 +31,66 @@
         <h2>{{data.titulo}}</h2>
     </div>
     {% if current_user.tipo_usuario.id == 1 %}
-        {% if data.libros_vendidos|length > 0 %}
-
-        {% else %}
-        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-            <h2>A&uacute;n no se venden libros</h2>
+    {% if data.libros_vendidos|length > 0 %}
+    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Libro</th>
+                        <th>Unidades Vendidas</th>
+                        <th>Precio Unit.</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set contador = namespace(total=0) %}
+                    {% for libro in data.libros_vendidos %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ libro.titulo }}</td>
+                        <td>{{ libro.unidades_vendidas }}</td>
+                        <td>${{ libro.precio }}</td>
+                        <td>${{ (libro.precio * libro.unidades_vendidas) }}</td>
+                    </tr>
+                    {% set contador.total = contador.total + (libro.precio * libro.unidades_vendidas) %}
+                    {% endfor %}
+                    <tr>
+                        <td colspan="4"></td>
+                        <td>${{ contador.total }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        {% endif %}
+    </div>
     {% else %}
-        {% if data.compras|length > 0 %}
-
-        {% else %}
-        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-            <h2>A&uacute;n no combras libros</h2>
+    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <h2>A&uacute;n no se venden libros</h2>
+    </div>
+    {% endif %}
+    {% else %}
+    {% if data.compras|length > 0 %}
+    {% for compra in data.compras %}
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+        <div class="card mb-4 shadow-sm">
+            {% set url = 'img/portadas/' + compra.libro.isbn + '.jpg' %}
+            <img class="card-img-top" src="{{ url_for('static', filename=url) }}" height="320"
+                alt="{{ compra.libro.titulo }}" />
+            <div class="card-body">
+                <h5 class="card-title">{{ compra.libro.titulo }} <span style="float: right;">${{ compra.libro.precio
+                        }}</span>
+                </h5>
+                <p class="card-text">Comprado: {{ compra.formatted_date() }}</p>
+            </div>
         </div>
-        {% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <h2>A&uacute;n no combras libros</h2>
+    </div>
+    {% endif %}
     {% endif %}
 </div>
 
