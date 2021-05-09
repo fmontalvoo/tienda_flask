@@ -10,11 +10,6 @@ class Usuario(UserMixin):
         self.clave = clave
         self.tipo_usuario = tipo_usuario
 
-    def crypt_password(self, password):
-        crypt = generate_password_hash(password)
-        checked = check_password_hash(crypt, password)
-        return checked
-
     @classmethod
     def check_password(self, user_password, password):
         return check_password_hash(user_password, password)

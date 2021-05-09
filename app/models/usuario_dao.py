@@ -19,10 +19,7 @@ class UsuarioDao():
                 if coincide:
                     usuario_logeado = Usuario(data[0], data[1], None, None)
                     return usuario_logeado
-                else:
-                    return None
-            else:
-                return None
+            return None
         except Exception as ex:
             raise Exception(ex)
 
