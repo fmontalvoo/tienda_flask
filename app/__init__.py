@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
-from flask_login import LoginManager, login_user, logout_user
+from flask_login import LoginManager, login_user, logout_user, login_required
 
 from .models.entities.usuario import Usuario
 
@@ -23,11 +23,15 @@ login_manager_app = LoginManager(app)
 
 @login_manager_app.user_loader
 def load_user(id):
+    """
+    Carga al usuario en la sesion actual.
+    """
     return UsuarioDao.obtener_por_id(db, id)
 
 
 # Rutas de la aplicacion
 @app.route('/')
+@login_required
 def index():
     return render_template('index.html')
 
@@ -50,6 +54,7 @@ def login():
 
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     flash(LOGOUT, 'success')
@@ -57,6 +62,7 @@ def logout():
 
 
 @app.route('/libros')
+@login_required
 def listar_libros():
     try:
         libros = LibroDao.listar_libros(db)
@@ -68,11 +74,16 @@ def listar_libros():
 
 # Manejos de Errores
 def page_not_found(error):
-    return render_template('errors/404.html'), 404
+    return render_template('errors/404.html')
+
+
+def unauthorized_access(error):
+    return redirect(url_for('login'))
 
 
 def init_app(settings):
     app.config.from_object(settings)
     csrf.init_app(app)
     app.register_error_handler(404, page_not_found)
+    app.register_error_handler(401, unauthorized_access)
     return app
