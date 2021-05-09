@@ -21,5 +21,28 @@
         {% endwith %}
     </div>
 </div>
+<hr>
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <h2>{{data.titulo}}</h2>
+    </div>
+    {% if current_user.tipo_usuario.id == 1 %}
+        {% if data.libros_vendidos|length > 0 %}
+
+        {% else %}
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h2>A&uacute;n no se venden libros</h2>
+        </div>
+        {% endif %}
+    {% else %}
+        {% if data.compras|length > 0 %}
+
+        {% else %}
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h2>A&uacute;n no combras libros</h2>
+        </div>
+        {% endif %}
+    {% endif %}
+</div>
 
 {% endblock container %}

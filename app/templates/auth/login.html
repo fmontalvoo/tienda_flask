@@ -31,9 +31,11 @@
 
     <button class="w-100 btn btn-lg btn-primary" type="submit">Iniciar sesi&oacute;n</button>
 
+    <br>
+    <br>
+
     {% with messages = get_flashed_messages(with_categories=True) %}
     {% if messages %}
-    <br>
     {% for cateogry, message in messages %}
     {% if cateogry == 'warning' %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
