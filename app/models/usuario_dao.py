@@ -35,7 +35,7 @@ class UsuarioDao():
                     WHERE USU.id = {0}""".format(id)
             cursor.execute(sql)
             data = cursor.fetchone()
-            tipo_usuario = tipo_usuario(data[2], data[3])
+            tipo_usuario = TipoUsuario(data[2], data[3])
             usuario_logeado = Usuario(data[0], data[1], None, tipo_usuario)
             return usuario_logeado
         except Exception as ex:

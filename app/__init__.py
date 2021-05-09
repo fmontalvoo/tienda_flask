@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
+from flask_login import LoginManager, login_user
 
 from .models.entities.usuario import Usuario
 
@@ -15,6 +16,13 @@ app = Flask(__name__)
 
 db = MySQL(app)
 
+login_manager_app = LoginManager(app)
+
+
+@login_manager_app.user_loader
+def load_user(id):
+    return UsuarioDao.obtener_por_id(db, id)
+
 
 # Paginas de la aplicacion
 @app.route('/')
@@ -27,8 +35,9 @@ def login():
     if request.method == 'POST':
         usuario = Usuario(
             None, request.form['user'], request.form['password'], None)
-        auth = UsuarioDao.login(db, usuario)
-        if auth != None:
+        logged_user = UsuarioDao.login(db, usuario)
+        if logged_user != None:
+            login_user(logged_user)
             return redirect(url_for('index'))
         else:
             return render_template('auth/login.html')
