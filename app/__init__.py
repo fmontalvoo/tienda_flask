@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_mail import Mail
 
 from .models.entities.libro import Libro
 from .models.entities.compra import Compra
@@ -12,7 +13,7 @@ from .models.compra_dao import CompraDao
 from .models.usuario_dao import UsuarioDao
 
 from .consts import *
-# from .emails import confirmacion_compra
+from .emails import confirmacion_compra
 
 
 # CSRF (Cross-site Request Forgery): Solicitud de falsificacion entre sitios.
@@ -23,6 +24,8 @@ app = Flask(__name__)
 db = MySQL(app)
 
 login_manager_app = LoginManager(app)
+
+mail = Mail()
 
 
 @login_manager_app.user_loader
@@ -104,7 +107,7 @@ def comprar_libro():
         compra = Compra(None, libro, current_user)
         data['exito'] = CompraDao.registrar_compra(db, compra)
 
-        # confirmacion_compra(app, mail, current_user, libro)  # Envío asíncrono.
+        confirmacion_compra(app, mail, current_user, libro)  # Envío asíncrono.
     except Exception as ex:
         data['mensaje'] = format(ex)
         data['exito'] = False
@@ -124,6 +127,7 @@ def unauthorized_access(error):
 def init_app(settings):
     app.config.from_object(settings)
     csrf.init_app(app)
+    mail.init_app(app)
     app.register_error_handler(404, page_not_found)
     app.register_error_handler(401, unauthorized_access)
     return app
