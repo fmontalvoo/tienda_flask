@@ -80,7 +80,7 @@ def listar_libros():
         data = {'libros': libros}
         return render_template('lista_libros.html', data=data)
     except Exception as ex:
-        print(ex)
+        return render_template('errors/error.html', mensaje=format(ex))
 
 
 # Manejos de Errores
