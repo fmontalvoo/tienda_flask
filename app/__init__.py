@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager, login_user, logout_user
 
 from .models.entities.usuario import Usuario
 
@@ -24,7 +24,7 @@ def load_user(id):
     return UsuarioDao.obtener_por_id(db, id)
 
 
-# Paginas de la aplicacion
+# Rutas de la aplicacion
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -45,8 +45,14 @@ def login():
         return render_template('auth/login.html')
 
 
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
 @app.route('/libros')
-def libros():
+def listar_libros():
     try:
         libros = LibroDao.listar_libros(db)
         data = {'libros': libros}
